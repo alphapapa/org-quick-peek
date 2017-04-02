@@ -174,12 +174,14 @@
     (setq org-quick-peek-agenda-peek-key-previous-bind command)
     (message "Key '%s' is already bound in `org-agenda-mode-map' to command `%s'.  Overriding, binding to command `org-quick-peek-agenda-current-item'.  You may customize `org-quick-peek-agenda-peek-key'."
              org-quick-peek-agenda-peek-key command))
-  (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key 'org-quick-peek-agenda-current-item))
+  (when org-quick-peek-agenda-peek-key
+    (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key 'org-quick-peek-agenda-current-item)))
 
 (defun org-quick-peek--unbind-agenda-peek-key ()
   "Unbind/restore previous binding for `org-quick-peek-agenda-peek-key'."
-  (let ((def (or org-quick-peek-agenda-peek-key-previous-bind 'undefined)))
-    (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key def)))
+  (when org-quick-peek-agenda-peek-key
+    (let ((def (or org-quick-peek-agenda-peek-key-previous-bind 'undefined)))
+      (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key def))))
 
 ;;;;; Define minor mode
 
