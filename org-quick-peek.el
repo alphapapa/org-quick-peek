@@ -95,27 +95,28 @@
 
         ;; From org.el
         (when (org-in-regexp org-bracket-link-regexp 1)
+          ;; Get marker to linked heading
           (setq link (org-extract-attributes
                       (org-link-unescape (org-match-string-no-properties 1))))
           (while (string-match " *\n *" link)
             (setq link (replace-match " " t t link)))
-          (setq link (org-link-expand-abbrev link)))
-        (when (string-match org-link-re-with-space3 link)
-          (setq type (match-string 1 link)
-                path (match-string 2 link)))
-        (when (and path
-                   (string= type "id"))
-          (setq marker (org-id-find path 'marker)))
+          (setq link (org-link-expand-abbrev link))
+          (when (string-match org-link-re-with-space3 link)
+            (setq type (match-string 1 link)
+                  path (match-string 2 link)))
+          (when (and path
+                     (string= type "id"))
+            (setq marker (org-id-find path 'marker)))
 
-        (save-current-buffer  ; Not sure if necessary
-          (unless marker
-            ;; Hopefully this will avoid calling org-open-at-point
-            ;; most of the time, because org-open-at-point calls
-            ;; org-show-context, which unnecessarily reveals hidden
-            ;; nodes
-            (org-open-at-point)
-            (setq marker (point-marker))))
-        (quick-peek-show (org-agenda-get-some-entry-text marker org-quick-peek-show-lines))))))
+          (save-current-buffer  ; Not sure if necessary
+            (unless marker
+              ;; Hopefully this will avoid calling org-open-at-point
+              ;; most of the time, because org-open-at-point calls
+              ;; org-show-context, which unnecessarily reveals hidden
+              ;; nodes
+              (org-open-at-point)
+              (setq marker (point-marker))))
+          (quick-peek-show (org-agenda-get-some-entry-text marker org-quick-peek-show-lines)))))))
 
 (defun org-quick-peek-agenda-current-item ()
   "Show quick peek of current item, or hide if one is already shown."
@@ -147,6 +148,7 @@
 (defun org-quick-peek--org-cycle-after (&optional args)
   "Function to run after `org-cycle' to show peeks of linked headings."
   (save-excursion
+    (beginning-of-line)
     (when (re-search-forward org-bracket-link-regexp (line-end-position) t)
       (org-quick-peek-link))))
 
