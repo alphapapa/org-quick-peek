@@ -1,0 +1,42 @@
+* org-quick-peek
+
+[[https://melpa.org/#/helm-navi][file:https://melpa.org/packages/org-quick-peek-badge.svg]]
+
+This package lets you quickly "peek" at the contents of Org nodes that are off-screen, using the [[https://github.com/cpitclaudel/quick-peek/][quick-peek]] package by [[https://github.com/cpitclaudel/quick-peek/][Clément Pit-Claudel]].
+
+[[screenshot.png]]
+
+** Installation
+
+Install the package from MELPA and you're all set!
+
+If you want to install it manually, put =org-quick-peek.el= in your =load-path=, then add this to your init file:
+
+#+BEGIN_SRC elisp
+  (require 'org-quick-peek)
+#+END_SRC
+
+** Usage
+
+Run =org-quick-peek-mode= to activate these commands:
+
++ =org-quick-peek-link= shows the contents of a linked node when the point is on an Org link that links to another Org heading.
++ =org-quick-peek-agenda-current-item=, bound to =M-p= by default, shows the contents of the currently selected item in the Agenda.
++ =org-quick-peek-agenda-all= shows the contents of every item in the Agenda.  This looks nicer than =org-agenda-entry-text-mode=, but it may be much slower in large Agenda buffers.
+
+** Tips
+
+You can customize key bindings and more in the =org-quick-peek= customization group.
+
+** Contributions
+
+Yes, please.
+
+** Credits
+
++  Thanks to [[https://github.com/cpitclaudel/quick-peek/][Clément Pit-Claudel]] for =quick-peek=!
++  Thanks to [[https://github.com/syohex][Syohei YOSHIDA]] and [[https://github.com/purcell][Steve Purcell]] for their tireless work curating MELPA.
+
+** License
+
+GPLv3
