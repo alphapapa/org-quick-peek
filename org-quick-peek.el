@@ -170,6 +170,7 @@
 (define-minor-mode org-quick-peek-mode
   "Show quick peeks of Org Agenda entries and linked Org headings."
   :group 'org-quick-peek
+  :global t
   (if org-quick-peek-mode
       (org-quick-peek--enable)
     (org-quick-peek--disable)))
