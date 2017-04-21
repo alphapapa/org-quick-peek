@@ -14,7 +14,7 @@
 
 ;;; Usage:
 
-;; Run `org-quick-peek-mode' to activate these commands:
+;; These commands are available:
 
 ;; + `org-quick-peek-link' shows the contents of a linked node when
 ;;    the point is on an Org link that links to another Org heading.
@@ -50,6 +50,16 @@
 (require 'quick-peek)
 (require 'dash)
 (require 's)
+
+;;;; Customization
+
+(defgroup org-quick-peek nil
+  "Settings for `org-quick-peek'."
+  :group 'org)
+
+(defcustom org-quick-peek-show-lines 10
+  "Show this many lines of entry contents."
+  :type 'integer)
 
 ;;;; Functions
 
@@ -100,7 +110,7 @@
           (quick-peek-show (org-agenda-get-some-entry-text marker org-quick-peek-show-lines)))))))
 
 (defun org-quick-peek-agenda-current-item ()
-  "Show quick peek of current item, or hide if one is already shown."
+  "Show quick peek of current agenda item, or hide if one is already shown."
   (interactive)
   (unless (> (quick-peek-hide (point)) 0)
     (org-quick-peek--agenda-show)))
@@ -126,85 +136,9 @@
         (unless quiet
           (minibuffer-message "Entry has no text.")))))
 
-(defun org-quick-peek--org-cycle-after (&optional args)
-  "Function to run after `org-cycle' to show peeks of linked headings."
-  (save-excursion
-    (beginning-of-line)
-    (when (re-search-forward org-bracket-link-regexp (line-end-position) t)
-      (org-quick-peek-link))))
-
 (defun org-quick-peek--s-trim-lines (s)
   "Trim each line in string S."
   (s-join "\n" (-map 's-trim (s-lines s))))
-
-;;;;;; Key binding
-
-(defun org-quick-peek--set-key-bind (symbol key)
-  "Set SYMBOL to KEY using `set-default', adjusting keymaps if `org-quick-peek-mode' is active."
-  ;; TODO: Test this more.  Seems to work, but not completely sure
-  ;; it's removing the old bind when changed.
-  (when org-quick-peek-mode
-    (org-quick-peek--unbind-agenda-peek-key))
-  (set-default symbol key)
-  (when org-quick-peek-mode
-    (org-quick-peek--bind-agenda-peek-key)))
-
-(defun org-quick-peek--bind-agenda-peek-key ()
-  "Bind `org-quick-peek-agenda-peek-key' to `org-quick-peek-agenda-current-item', saving existing bind, and restoring when changed."
-  (-when-let (command (lookup-key org-agenda-mode-map org-quick-peek-agenda-peek-key t))
-    (setq org-quick-peek-agenda-peek-key-previous-bind command)
-    (message "Key '%s' is already bound in `org-agenda-mode-map' to command `%s'.  Overriding, binding to command `org-quick-peek-agenda-current-item'.  You may customize `org-quick-peek-agenda-peek-key'."
-             org-quick-peek-agenda-peek-key command))
-  (when org-quick-peek-agenda-peek-key
-    (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key 'org-quick-peek-agenda-current-item)))
-
-(defun org-quick-peek--unbind-agenda-peek-key ()
-  "Unbind/restore previous binding for `org-quick-peek-agenda-peek-key'."
-  (when org-quick-peek-agenda-peek-key
-    (let ((def (or org-quick-peek-agenda-peek-key-previous-bind 'undefined)))
-      (define-key org-agenda-mode-map org-quick-peek-agenda-peek-key def))))
-
-;;;;; Define minor mode
-
-(define-minor-mode org-quick-peek-mode
-  "Show quick peeks of Org Agenda entries and linked Org headings."
-  :group 'org-quick-peek
-  :global t
-  (if org-quick-peek-mode
-      (org-quick-peek--enable)
-    (org-quick-peek--disable)))
-
-(defun org-quick-peek--enable ()
-  "Enable `org-quick-peek-mode'."
-  (advice-add 'org-cycle :after 'org-quick-peek--org-cycle-after)
-  (org-quick-peek--bind-agenda-peek-key))
-
-(defun org-quick-peek--disable ()
-  "Disable `org-quick-peek-mode'."
-  (advice-remove 'org-cycle 'org-quick-peek--org-cycle-after)
-  (org-quick-peek--unbind-agenda-peek-key))
-
-;;;; Customization
-
-;; Usually I'd put this at the top, but it it needs to be after some
-;; functions are defined, so might as well put the whole section down
-;; here.
-
-(defgroup org-quick-peek nil
-  "Settings for `org-quick-peek'."
-  :group 'org)
-
-(defcustom org-quick-peek-agenda-peek-key (kbd "M-p")
-  "Key to peek at Agenda items."
-  :type 'key-sequence
-  :set 'org-quick-peek--set-key-bind)
-
-(defcustom org-quick-peek-show-lines 10
-  "Show this many lines of entry contents."
-  :type 'integer)
-
-(defvar org-quick-peek-agenda-peek-key-previous-bind nil
-  "Command that `org-quick-peek-agenda-peek-key' was bound to before activating `org-quick-peek-mode'.")
 
 ;;;; Footer
 

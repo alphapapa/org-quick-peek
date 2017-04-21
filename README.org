@@ -22,7 +22,7 @@ If you want to install it manually, put =org-quick-peek.el= in your =load-path=,
 
 ** Usage
 
-Run =org-quick-peek-mode= to activate these commands:
+These commands are available:
 
 + =org-quick-peek-link= shows the contents of a linked node when the point is on an Org link that links to another Org heading.
 + =org-quick-peek-agenda-current-item=, bound to =M-p= by default, shows the contents of the currently selected item in the Agenda.
@@ -30,7 +30,7 @@ Run =org-quick-peek-mode= to activate these commands:
 
 ** Tips
 
-You can customize key bindings and more in the =org-quick-peek= customization group.
+You can customize some options in the =org-quick-peek= customization group.
 
 ** Contributions
 
@@ -40,6 +40,7 @@ Bug reports, feature requests, pull requests, /oh my/!
 
 +  Thanks to [[https://github.com/cpitclaudel/quick-peek/][Clément Pit-Claudel]] for =quick-peek=!
 +  Thanks to [[https://github.com/syohex][Syohei YOSHIDA]] and [[https://github.com/purcell][Steve Purcell]] for their tireless work curating MELPA.
++  Thanks to [[https://github.com/zeltak][zeltak]] for his help with testing.
 
 ** License
 
