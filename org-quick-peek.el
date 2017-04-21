@@ -78,8 +78,7 @@
         ;; From org.el
         (when (org-in-regexp org-bracket-link-regexp 1)
           ;; Get marker to linked heading
-          (setq link (org-extract-attributes
-                      (org-link-unescape (org-match-string-no-properties 1))))
+          (setq link (org-link-unescape (org-match-string-no-properties 1)))
           (while (string-match " *\n *" link)
             (setq link (replace-match " " t t link)))
           (setq link (org-link-expand-abbrev link))
