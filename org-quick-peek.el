@@ -51,24 +51,6 @@
 (require 'dash)
 (require 's)
 
-;;;; Customization
-
-(defgroup org-quick-peek nil
-  "Settings for `org-quick-peek'."
-  :group 'org)
-
-(defcustom org-quick-peek-agenda-peek-key (kbd "M-p")
-  "Key to peek at Agenda items."
-  :type 'key-sequence
-  :set 'org-quick-peek--set-key-bind)
-
-(defcustom org-quick-peek-show-lines 10
-  "Show this many lines of entry contents."
-  :type 'integer)
-
-(defvar org-quick-peek-agenda-peek-key-previous-bind nil
-  "Command that `org-quick-peek-agenda-peek-key' was bound to before activating `org-quick-peek-mode'.")
-
 ;;;; Functions
 
 ;;;;; Commands
@@ -201,6 +183,28 @@
   "Disable `org-quick-peek-mode'."
   (advice-remove 'org-cycle 'org-quick-peek--org-cycle-after)
   (org-quick-peek--unbind-agenda-peek-key))
+
+;;;; Customization
+
+;; Usually I'd put this at the top, but it it needs to be after some
+;; functions are defined, so might as well put the whole section down
+;; here.
+
+(defgroup org-quick-peek nil
+  "Settings for `org-quick-peek'."
+  :group 'org)
+
+(defcustom org-quick-peek-agenda-peek-key (kbd "M-p")
+  "Key to peek at Agenda items."
+  :type 'key-sequence
+  :set 'org-quick-peek--set-key-bind)
+
+(defcustom org-quick-peek-show-lines 10
+  "Show this many lines of entry contents."
+  :type 'integer)
+
+(defvar org-quick-peek-agenda-peek-key-previous-bind nil
+  "Command that `org-quick-peek-agenda-peek-key' was bound to before activating `org-quick-peek-mode'.")
 
 ;;;; Footer
 
