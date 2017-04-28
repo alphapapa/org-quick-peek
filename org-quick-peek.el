@@ -61,6 +61,10 @@
   "Show this many lines of entry contents."
   :type 'integer)
 
+(defcustom org-quick-peek-show-drawers nil
+  "Show drawers in entries."
+  :type 'boolean)
+
 ;;;; Functions
 
 ;;;;; Commands
@@ -107,7 +111,9 @@
               ;; nodes
               (org-open-at-point)
               (setq marker (point-marker))))
-          (quick-peek-show (org-agenda-get-some-entry-text marker org-quick-peek-show-lines)))))))
+          (quick-peek-show (org-quick-peek--get-entry-text marker
+                                                           :num-lines org-quick-peek-show-lines
+                                                           :keep-drawers org-quick-peek-show-drawers)))))))
 
 (defun org-quick-peek-agenda-current-item ()
   "Show quick peek of current agenda item, or hide if one is already shown."
@@ -129,12 +135,54 @@
 
 (defun org-quick-peek--agenda-show (&optional &key quiet)
   "Show quick peek at current line."
-  (-if-let* ((m (org-get-at-bol 'org-hd-marker))
-             (text (org-quick-peek--s-trim-lines (org-agenda-get-some-entry-text m org-quick-peek-show-lines))))
+  (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
+             (text (org-quick-peek--s-trim-lines (org-quick-peek--get-entry-text marker
+                                                                                 :num-lines org-quick-peek-show-lines
+                                                                                 :keep-drawers org-quick-peek-show-drawers))))
       (if (s-present? text)
           (quick-peek-show text)
         (unless quiet
           (minibuffer-message "Entry has no text.")))))
+
+(cl-defun org-quick-peek--get-entry-text (marker &key keep-drawers num-lines)
+  "Return Org entry text from node at MARKER.
+If KEEP-DRAWERS is non-nil, drawers will be kept, otherwise
+removed.  If NUM-LINES is non-nil, only return the first that
+many lines."
+  ;; Modeled after `org-agenda-get-some-entry-text'
+  (let (text)
+    (with-current-buffer (marker-buffer marker)
+      ;; Get raw entry text
+      (org-with-wide-buffer
+       (goto-char marker)
+       ;; Skip heading
+       (end-of-line 1)
+       ;; Get entry text
+       (setq text (buffer-substring
+                   (point)
+                   (or (save-excursion (outline-next-heading) (point))
+                       (point-max))))))
+    (unless keep-drawers
+      (with-temp-buffer
+        ;; Insert entry in temp buffer and remove drawers
+        (insert text)
+        (goto-char (point-min))
+        (while (re-search-forward org-drawer-regexp nil t)
+          ;; Remove drawers
+          (delete-region (match-beginning 0)
+                         (progn (re-search-forward
+                                 "^[ \t]*:END:.*\n?" nil 'move)
+                                (point))))
+        (setq text (buffer-substring (point-min) (point-max)))))
+    (when num-lines
+      ;; Remove extra lines
+      (with-temp-buffer
+        (insert text)
+        (goto-char (point-min))
+        (org-goto-line (1+ num-lines))
+        (backward-char 1)
+        (setq text (buffer-substring (point-min) (point-max)))))
+    text))
 
 (defun org-quick-peek--s-trim-lines (s)
   "Trim each line in string S."
