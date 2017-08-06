@@ -36,6 +36,16 @@ You can customize some options in the =org-quick-peek= customization group.
 
 Bug reports, feature requests, pull requests, /oh my/!
 
+** Ideas
+
+*** TODO Command to add agenda peeks for items matching criteria
+
+e.g. add peeks for all items with a certain tag.
+
+*** TODO Show entry text from latest timestamp in entry
+
+e.g. find the latest timestamp in the entry and show entry text starting from it.
+
 ** Credits
 
 +  Thanks to [[https://github.com/cpitclaudel/quick-peek/][Clément Pit-Claudel]] for =quick-peek=!
