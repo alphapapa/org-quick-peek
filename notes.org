@@ -1,0 +1,38 @@
+* Bugs
+
+
+
+** TODO [[gnus:gmane.emacs.orgmode#omfocp$b33$1@blaine.gmane.org][Email from Alexander Baier: Re: agenda configurable entry-]]
+:PROPERTIES:
+:ID:       de9cc075-2ac9-4fcc-aaa1-cd4456fcba51
+:END:
+
+#+BEGIN_QUOTE
+This looks really nice! A few things I discovered:
+
+1. If the peek contains a link and I click on it with the left mouse
+button, the message "No link found" is displayed.
+
+2. If a headline in the agenda contains a link to another headline and
+point is somewhere on that headline and I call org-quick-peek-link I
+get "Lisp error: (wrong-type-argument stringp nil)".
+
+3. If point is on a link to another headline in a normal org buffer
+and I call org-quick-peek-link I get "Lisp error: (void-variable
+path)". This is fixed applying this patch:
+
+@@ -80,7 +80,7 @@
+             (org-show-following-heading nil)
+             (org-show-entry-below nil)
+             (org-show-siblings nil)
+-            link type marker)
++            link type marker path)
+
+         ;; From org.el
+         (when (and (looking-at org-complex-heading-regexp))
+
+
+Regards,
+-- 
+Alex
+#+END_QUOTE
