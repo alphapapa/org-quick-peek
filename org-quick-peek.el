@@ -51,6 +51,15 @@
 (require 'dash)
 (require 's)
 
+;; Prevent clearing the overlay info on `agenda-redo'
+;; FIXME: It would be better to do this using
+;; agenda-local-vars-to-keep from `org-agenda-mode', but
+;; org-agenda-mode does not expose this variable
+(add-to-list 'org-agenda-local-vars 'quick-peek--overlays)
+
+;; Clean up overlays after `org-agenda-redo'
+(add-hook 'org-agenda-mode-hook #'quick-peek-hide)
+
 ;;;; Customization
 
 (defgroup org-quick-peek nil
