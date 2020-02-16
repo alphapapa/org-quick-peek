@@ -150,7 +150,8 @@ If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
 (cl-defun org-quick-peek--agenda-show-logbook (&key quiet)
   "Show quick peek (:LOGBOOK: drawer only) of item at current line."
   (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
-             (text (org-quick-peek--s-trim-lines
+             (text (s-trim
+                    (org-quick-peek--s-trim-lines
                     (let ((entry 
                            (org-quick-peek--get-entry-text marker
                                                            :num-lines nil
@@ -163,7 +164,7 @@ If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
                           (let* ((elt (org-element-property-drawer-parser nil))
                                  (beg (org-element-property :contents-begin elt))
                                  (end (org-element-property :contents-end elt)))
-                            (buffer-substring beg end))))))))
+                            (buffer-substring beg end)))))))))
 
       (if (s-present? text)
           (quick-peek-show text)
