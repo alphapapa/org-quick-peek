@@ -115,11 +115,14 @@
                                                            :num-lines org-quick-peek-show-lines
                                                            :keep-drawers org-quick-peek-show-drawers)))))))
 
-(defun org-quick-peek-agenda-current-item ()
-  "Show quick peek of current agenda item, or hide if one is already shown."
+(defun org-quick-peek-agenda-current-item (&optional logbook)
+  "Show quick peek of current agenda item, or hide if one is already shown.
+If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
   (interactive)
   (unless (> (quick-peek-hide (point)) 0)
-    (org-quick-peek--agenda-show)))
+    (cond
+     (logbook (org-quick-peek--agenda-show-logbook))
+     (t (org-quick-peek--agenda-show)))))
 
 (defun org-quick-peek-agenda-all ()
   "Show/hide quick peek of all agenda items."
@@ -139,6 +142,28 @@
              (text (org-quick-peek--s-trim-lines (org-quick-peek--get-entry-text marker
                                                                                  :num-lines org-quick-peek-show-lines
                                                                                  :keep-drawers org-quick-peek-show-drawers))))
+      (if (s-present? text)
+          (quick-peek-show text)
+        (unless quiet
+          (minibuffer-message "Entry has no text.")))))
+
+(cl-defun org-quick-peek--agenda-show-logbook (&key quiet)
+  "Show quick peek (:LOGBOOK: drawer only) of item at current line."
+  (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
+             (text (org-quick-peek--s-trim-lines
+                    (let ((entry (org-quick-peek--get-entry-text marker
+                                                                 :num-lines nil
+                                                                 :keep-drawers t)))
+                      (with-temp-buffer
+                        (setq buffer-read-only nil)
+                        (insert entry)
+                        (beginning-of-buffer)
+                        (when (re-search-forward ":LOGBOOK:" nil)
+                          (let* ((elt (org-element-property-drawer-parser nil))
+                                 (beg (org-element-property :contents-begin elt))
+                                 (end (org-element-property :contents-end elt)))
+                            (buffer-substring beg end))))))))
+
       (if (s-present? text)
           (quick-peek-show text)
         (unless quiet
