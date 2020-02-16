@@ -124,6 +124,12 @@ If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
      (logbook (org-quick-peek--agenda-show-logbook))
      (t (org-quick-peek--agenda-show)))))
 
+(defun org-quick-peek-agenda-current-item-logbook ()
+    "Show quick peek of current agenda item's :LOGBOOK: entry.
+This is a convenience wrapper around `org-quick-peek-agenda-current-item' for key-bindings."
+  (interactive)
+  (org-quick-peek-agenda-current-item 'logbook))
+
 (defun org-quick-peek-agenda-all ()
   "Show/hide quick peek of all agenda items."
   (interactive)
@@ -160,7 +166,7 @@ If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
                         (setq buffer-read-only nil)
                         (insert entry)
                         (beginning-of-buffer)
-                        (when (re-search-forward ":LOGBOOK:" nil t)
+                        (when (re-search-forward ":LOGBOOK:" nil)
                           (let* ((elt (org-element-property-drawer-parser nil))
                                  (beg (org-element-property :contents-begin elt))
                                  (end (org-element-property :contents-end elt)))
