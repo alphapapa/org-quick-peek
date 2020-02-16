@@ -151,14 +151,15 @@ If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
   "Show quick peek (:LOGBOOK: drawer only) of item at current line."
   (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
              (text (org-quick-peek--s-trim-lines
-                    (let ((entry (org-quick-peek--get-entry-text marker
-                                                                 :num-lines nil
-                                                                 :keep-drawers t)))
+                    (let ((entry 
+                           (org-quick-peek--get-entry-text marker
+                                                           :num-lines nil
+                                                           :keep-drawers t)))
                       (with-temp-buffer
                         (setq buffer-read-only nil)
                         (insert entry)
                         (beginning-of-buffer)
-                        (when (re-search-forward ":LOGBOOK:" nil)
+                        (when (re-search-forward ":LOGBOOK:" nil t)
                           (let* ((elt (org-element-property-drawer-parser nil))
                                  (beg (org-element-property :contents-begin elt))
                                  (end (org-element-property :contents-end elt)))
