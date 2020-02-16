@@ -133,7 +133,7 @@
 
 ;;;;; Support functions
 
-(defun org-quick-peek--agenda-show (&optional &key quiet)
+(cl-defun org-quick-peek--agenda-show (&key quiet)
   "Show quick peek at current line."
   (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
              (text (org-quick-peek--s-trim-lines (org-quick-peek--get-entry-text marker
