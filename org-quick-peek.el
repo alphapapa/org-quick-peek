@@ -166,7 +166,7 @@ This is a convenience wrapper around `org-quick-peek-agenda-current-item' for ke
                              (setq buffer-read-only nil)
                              (insert entry)
                              (beginning-of-buffer)
-                             (when (re-search-forward ":LOGBOOK:" nil)
+                             (when (re-search-forward (format ":%s:" drawer) nil)
                                (let* ((drawer (cadr (org-element-property-drawer-parser nil)))
                                       (beg (plist-get drawer :contents-begin))
                                       (end (plist-get drawer :contents-end)))
