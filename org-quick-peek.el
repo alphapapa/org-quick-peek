@@ -115,14 +115,14 @@
                                                            :num-lines org-quick-peek-show-lines
                                                            :keep-drawers org-quick-peek-show-drawers)))))))
 
-(defun org-quick-peek-agenda-current-item (&optional logbook)
+(defun org-quick-peek-agenda-current-item (&optional type)
   "Show quick peek of current agenda item, or hide if one is already shown.
 If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
   (interactive)
   (unless (> (quick-peek-hide (point)) 0)
-    (cond
-     (logbook (org-quick-peek--agenda-show-logbook))
-     (t (org-quick-peek--agenda-show)))))
+    (pcase type
+     ('logbook (org-quick-peek--agenda-show-logbook))
+     (_ (org-quick-peek--agenda-show)))))
 
 (defun org-quick-peek-agenda-current-item-logbook ()
     "Show quick peek of current agenda item's :LOGBOOK: entry.
@@ -167,11 +167,10 @@ This is a convenience wrapper around `org-quick-peek-agenda-current-item' for ke
                         (insert entry)
                         (beginning-of-buffer)
                         (when (re-search-forward ":LOGBOOK:" nil)
-                          (let* ((elt (org-element-property-drawer-parser nil))
-                                 (beg (org-element-property :contents-begin elt))
-                                 (end (org-element-property :contents-end elt)))
+                          (let* ((drawer (cadr (org-element-property-drawer-parser nil)))
+                                 (beg (plist-get drawer :contents-begin))
+                                 (end (plist-get drawer :contents-end)))
                             (buffer-substring beg end)))))))))
-
       (if (s-present? text)
           (quick-peek-show text)
         (unless quiet
