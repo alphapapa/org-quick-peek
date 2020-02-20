@@ -153,26 +153,26 @@ This is a convenience wrapper around `org-quick-peek-agenda-current-item' for ke
         (unless quiet
           (minibuffer-message "Entry has no text.")))))
 
-(cl-defun org-quick-peek--agenda-show-logbook (&key quiet)
-  "Show quick peek (:LOGBOOK: drawer only) of item at current line."
+(cl-defun org-quick-peek--agenda-show-drawer (drawer &key quiet)
+  "Show quick peek of the drawer for item at point."
   (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
-             (text (s-trim
-                    (org-quick-peek--s-trim-lines
-                    (let ((entry 
-                           (org-quick-peek--get-entry-text marker
-                                                           :num-lines nil
-                                                           :keep-drawers t)))
-                      (with-temp-buffer
-                        (setq buffer-read-only nil)
-                        (insert entry)
-                        (beginning-of-buffer)
-                        (when (re-search-forward ":LOGBOOK:" nil)
-                          (let* ((drawer (cadr (org-element-property-drawer-parser nil)))
-                                 (beg (plist-get drawer :contents-begin))
-                                 (end (plist-get drawer :contents-end)))
-                            (buffer-substring beg end)))))))))
-      (if (s-present? text)
-          (quick-peek-show text)
+             (contents (s-trim
+                        (org-quick-peek--s-trim-lines
+                         (let ((entry
+                                (org-quick-peek--get-entry-text marker
+                                                                :num-lines nil
+                                                                :keep-drawers t)))
+                           (with-temp-buffer
+                             (setq buffer-read-only nil)
+                             (insert entry)
+                             (beginning-of-buffer)
+                             (when (re-search-forward ":LOGBOOK:" nil)
+                               (let* ((drawer (cadr (org-element-property-drawer-parser nil)))
+                                      (beg (plist-get drawer :contents-begin))
+                                      (end (plist-get drawer :contents-end)))
+                                 (buffer-substring beg end)))))))))
+      (if (s-present? contents)
+          (quick-peek-show contents)
         (unless quiet
           (minibuffer-message "Entry has no text.")))))
 
