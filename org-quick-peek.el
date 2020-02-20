@@ -115,20 +115,20 @@
                                                            :num-lines org-quick-peek-show-lines
                                                            :keep-drawers org-quick-peek-show-drawers)))))))
 
-(defun org-quick-peek-agenda-current-item (&optional type)
+(defun org-quick-peek-agenda-current-item (&optional drawer)
   "Show quick peek of current agenda item, or hide if one is already shown.
-If LOGBOOK is non-nil, retrieve the entry from the :LOGBOOK: drawer instead."
+DRAWER is the optional name of a drawer to retrieve instead e.g. \"LOGBOOK\""
   (interactive)
   (unless (> (quick-peek-hide (point)) 0)
-    (pcase type
-     ('logbook (org-quick-peek--agenda-show-logbook))
-     (_ (org-quick-peek--agenda-show)))))
+    (if (stringp drawer)
+        (org-quick-peek--agenda-show-drawer drawer)
+      (org-quick-peek--agenda-show))))
 
 (defun org-quick-peek-agenda-current-item-logbook ()
-    "Show quick peek of current agenda item's :LOGBOOK: entry.
+  "Show quick peek of current agenda item's :LOGBOOK: entry.
 This is a convenience wrapper around `org-quick-peek-agenda-current-item' for key-bindings."
   (interactive)
-  (org-quick-peek-agenda-current-item 'logbook))
+  (org-quick-peek-agenda-current-item "LOGBOOK"))
 
 (defun org-quick-peek-agenda-all ()
   "Show/hide quick peek of all agenda items."
