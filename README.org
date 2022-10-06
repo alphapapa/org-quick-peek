@@ -1,7 +1,3 @@
-#+BEGIN_HTML
-<a href=https://alphapapa.github.io/dont-tread-on-emacs/><img src="dont-tread-on-emacs-150.png" align="right"></a>
-#+END_HTML
-
 * org-quick-peek
 
 [[https://melpa.org/#/helm-navi][file:https://melpa.org/packages/org-quick-peek-badge.svg]]
