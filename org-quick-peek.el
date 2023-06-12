@@ -115,11 +115,20 @@
                                                            :num-lines org-quick-peek-show-lines
                                                            :keep-drawers org-quick-peek-show-drawers)))))))
 
-(defun org-quick-peek-agenda-current-item ()
-  "Show quick peek of current agenda item, or hide if one is already shown."
+(defun org-quick-peek-agenda-current-item (&optional drawer)
+  "Show quick peek of current agenda item, or hide if one is already shown.
+DRAWER is the optional name of a drawer to retrieve instead e.g. \"LOGBOOK\""
   (interactive)
   (unless (> (quick-peek-hide (point)) 0)
-    (org-quick-peek--agenda-show)))
+    (if (stringp drawer)
+        (org-quick-peek--agenda-show-drawer drawer)
+      (org-quick-peek--agenda-show))))
+
+(defun org-quick-peek-agenda-current-item-logbook ()
+  "Show quick peek of current agenda item's :LOGBOOK: entry.
+This is a convenience wrapper around `org-quick-peek-agenda-current-item' for key-bindings."
+  (interactive)
+  (org-quick-peek-agenda-current-item "LOGBOOK"))
 
 (defun org-quick-peek-agenda-all ()
   "Show/hide quick peek of all agenda items."
@@ -133,7 +142,7 @@
 
 ;;;;; Support functions
 
-(defun org-quick-peek--agenda-show (&optional &key quiet)
+(cl-defun org-quick-peek--agenda-show (&key quiet)
   "Show quick peek at current line."
   (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
              (text (org-quick-peek--s-trim-lines (org-quick-peek--get-entry-text marker
@@ -141,6 +150,29 @@
                                                                                  :keep-drawers org-quick-peek-show-drawers))))
       (if (s-present? text)
           (quick-peek-show text)
+        (unless quiet
+          (minibuffer-message "Entry has no text.")))))
+
+(cl-defun org-quick-peek--agenda-show-drawer (drawer &key quiet)
+  "Show quick peek of the drawer for item at point."
+  (-if-let* ((marker (org-get-at-bol 'org-hd-marker))
+             (contents (s-trim
+                        (org-quick-peek--s-trim-lines
+                         (let ((entry
+                                (org-quick-peek--get-entry-text marker
+                                                                :num-lines nil
+                                                                :keep-drawers t)))
+                           (with-temp-buffer
+                             (setq buffer-read-only nil)
+                             (insert entry)
+                             (beginning-of-buffer)
+                             (when (re-search-forward (format ":%s:" drawer) nil)
+                               (let* ((drawer (cadr (org-element-property-drawer-parser nil)))
+                                      (beg (plist-get drawer :contents-begin))
+                                      (end (plist-get drawer :contents-end)))
+                                 (buffer-substring beg end)))))))))
+      (if (s-present? contents)
+          (quick-peek-show contents)
         (unless quiet
           (minibuffer-message "Entry has no text.")))))
 
